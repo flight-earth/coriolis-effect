@@ -80,8 +80,8 @@ fun check-eq( res: dms, tst: () -> dms, name = "eq " ++ res.show ) : <io> () {
     else "failed!:\n expect: " ++ res.show ++ "\n gotten: " ++ got.show))
 }
 
-fun check-normalize( res: dms, tst: () -> dms, name = "normalize " ++ res.show ) : <io> () {
-  val got = tst()
+fun check-normalize( res: dms, tst: dms, name = "normalize " ++ tst.show ) : <io> () {
+  val got = tst.normalize
   println(name ++ ": " ++
     (if (got == res)
     then "ok: " ++ res.show
@@ -117,25 +117,20 @@ fun test-eq() {
 }
 
 fun test-normalize() {
-  val f: double -> dms = fn (x){ x.Deg.from-deg.normalize }
-  check-normalize(DMS(0, 0, 0.0)){ 0.0.f }
-  check-normalize(DMS(180, 0, 0.0)){ 180.0.f }
-  check-normalize(DMS(1, 0, 0.0)){ 1.0.f }
-  check-normalize(DMS(180, 0, 0.0)){ -180.0.f }
-  check-normalize(DMS(359, 0, 0.0)){ -1.0.f }
+  val f: double -> dms = fn (x){ x.Deg.from-deg }
+  check-normalize(DMS(0, 0, 0.0), 0.0.f)
+  check-normalize(DMS(180, 0, 0.0), 180.0.f)
+  check-normalize(DMS(1, 0, 0.0), 1.0.f)
+  check-normalize(DMS(180, 0, 0.0), -180.0.f)
+  check-normalize(DMS(359, 0, 0.0), -1.0.f)
 
-  check-normalize(DMS(0, 0, 0.0)){ DMS(0, 0, 0.0).normalize }
-  check-normalize(DMS(180, 0, 0.0)){ DMS(180, 0, 0.0).normalize }
-  check-normalize(DMS(180, 0, 0.0)){ DMS(-180, 0, 0.0).normalize }
-  check-normalize(DMS(359, 0, 0.0)){ DMS(-1, 0, 0.0).normalize }
+  check-normalize(DMS(0, 0, 0.0), DMS(0, 0, 0.0))
+  check-normalize(DMS(180, 0, 0.0), DMS(180, 0, 0.0))
+  check-normalize(DMS(180, 0, 0.0), DMS(-180, 0, 0.0))
+  check-normalize(DMS(359, 0, 0.0), DMS(-1, 0, 0.0))
 
-  check-normalize(DMS(190,56,1.6037483874242753e-6)){
-    DMS(190,56,1.6037483874242753e-6).normalize
-  }
-
-  check-normalize(DMS(169, 3, 59.99999839625161)){
-    DMS(-190,56,1.603721102583222e-6).normalize
-  }
+  check-normalize(DMS(190,56,1.6037483874242753e-6), DMS(190,56,1.6037483874242753e-6))
+  check-normalize(DMS(169, 3, 59.99999839625161), DMS(-190,56,1.603721102583222e-6))
 }
 
 fun test-show() {
