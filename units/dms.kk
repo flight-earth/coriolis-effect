@@ -34,7 +34,12 @@ private fun div'(n: double, d: int): int {
   (n / d.double).floor.int
 }
 
-private fun divmod'( n: double, d: int): (int, double) {
+private fun mod'(n: double, d: int ): double {
+  val f = div'(n, d)
+  n - (f * d).double
+}
+
+private fun divmod'( n: double, d: int ): (int, double) {
   val f = div'(n, d)
   (f, n - (f * d).double)
 }
@@ -65,7 +70,17 @@ fun to-deg( dms: dms ): deg {
   Deg (dms.sign-dms.double * (d.abs + m.abs / 60.0 + s.abs / 3600.0))
 }
 
+fun normalize( dms: dms ): dms { dms.to-deg.deg.mod'(360).Deg.from-deg }
+
 fun check-eq( res: dms, tst: () -> dms, name = "eq " ++ res.show ) : <io> () {
+  val got = tst()
+  println(name ++ ": " ++
+    (if (got == res)
+    then "ok: " ++ res.show
+    else "failed!:\n expect: " ++ res.show ++ "\n gotten: " ++ got.show))
+}
+
+fun check-normalize( res: dms, tst: () -> dms, name = "normalize " ++ res.show ) : <io> () {
   val got = tst()
   println(name ++ ": " ++
     (if (got == res)
@@ -101,6 +116,28 @@ fun test-eq() {
   check-eq(DMS(90, 12, 0.9999)){ DMS(90, 12, 0.9999) }
 }
 
+fun test-normalize() {
+  val f: double -> dms = fn (x){ x.Deg.from-deg.normalize }
+  check-normalize(DMS(0, 0, 0.0)){ 0.0.f }
+  check-normalize(DMS(180, 0, 0.0)){ 180.0.f }
+  check-normalize(DMS(1, 0, 0.0)){ 1.0.f }
+  check-normalize(DMS(180, 0, 0.0)){ -180.0.f }
+  check-normalize(DMS(359, 0, 0.0)){ -1.0.f }
+
+  check-normalize(DMS(0, 0, 0.0)){ DMS(0, 0, 0.0).normalize }
+  check-normalize(DMS(180, 0, 0.0)){ DMS(180, 0, 0.0).normalize }
+  check-normalize(DMS(180, 0, 0.0)){ DMS(-180, 0, 0.0).normalize }
+  check-normalize(DMS(359, 0, 0.0)){ DMS(-1, 0, 0.0).normalize }
+
+  check-normalize(DMS(190,56,1.6037483874242753e-6)){
+    DMS(190,56,1.6037483874242753e-6).normalize
+  }
+
+  check-normalize(DMS(169, 3, 59.99999839625161)){
+    DMS(-190,56,1.603721102583222e-6).normalize
+  }
+}
+
 fun test-show() {
   check-show("90°12'0.9999''"){ DMS(90, 12, 0.9999).show(4) }
   check-show("169°3'59.99999839625161''"){ DMS(169, 3, 59.99999839625161).show(14) }
@@ -121,6 +158,7 @@ fun test-to-deg() {
 
 public fun main() {
   test-eq()
+  test-normalize()
   test-show()
   test-from-deg()
   test-to-deg()
