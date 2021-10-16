@@ -1,13 +1,34 @@
 public module units/dms
 
+import std/num/int64
+import std/num/double
+
+struct deg { deg: double }
 type dms { con DMS{ deg: int; min: int; sec: double } }
 
 fun (==)( x: dms, y: dms): bool {
   x.deg == y.deg && x.min == y.min && x.sec == y.sec
 }
 
-fun show ( dms: dms ): string {
-  dms.deg.show ++ "°" ++ dms.min.show ++ "'" ++ dms.sec.show ++ "''"
+fun show ( dms: dms, precision: int = -2 ): string {
+  dms.deg.show ++ "°" ++ dms.min.show ++ "'" ++ dms.sec.show-fixed(precision) ++ "''"
+}
+
+fun signum( i: double ): int {
+  match (i.sign) {
+    Lt -> -1
+    Gt -> 1
+    Eq -> 0
+  }
+}
+
+fun from-deg( Deg(d) ): dms {
+  val s = d.signum
+  val dAbs = d.abs
+  val dd = dAbs.floor
+  val dFrac = dAbs - dd
+  val (mm, mFrac) = divmod ( (dFrac * 60.0).truncate.int, 1)
+  DMS (s * dd.int, mm, mFrac.double * 60.0)
 }
 
 fun check-eq( res: dms, tst: () -> dms, name = "eq " ++ res.show ) : <io> () {
@@ -26,17 +47,33 @@ fun check-show( res: string, tst: () -> string, name = "show " ++ res ) : <io> (
     else "failed!:\n expect: " ++ res ++ "\n gotten: " ++ got))
 }
 
+fun check-from-deg( res: dms, tst: () -> dms, name = "from-deg " ++ res.show ): <io> () {
+  val got = tst()
+  println(name ++ ": " ++
+    (if (got == res)
+    then "ok: " ++ res.show
+    else "failed!:\n expect: " ++ res.show(14) ++ "\n gotten: " ++ got.show(14)))
+}
+
 fun test-eq() {
-   // rounding of dates
   check-eq(DMS(90, 12, 0.9999)){ DMS(90, 12, 0.9999) }
 }
 
 fun test-show() {
-   // rounding of dates
-  check-show("90°12'0.9999''"){ DMS(90, 12, 0.9999).show }
+  check-show("90°12'0.9999''"){ DMS(90, 12, 0.9999).show(4) }
+  check-show("169°3'59.99999839625161''"){ DMS(169, 3, 59.99999839625161).show(14) }
+}
+
+fun test-from-deg() {
+  check-from-deg(from-deg(Deg(0.0))){ DMS(0, 0, 0.0) }
+  check-from-deg(from-deg(Deg(1.0))){ DMS(1, 0, 0.0) }
+  check-from-deg(from-deg(Deg(-1.0))){ DMS(-1, 0, 0.0) }
+  check-from-deg(from-deg(Deg(169.06666666622118))){ DMS(169, 3, 59.99999839625161) }
+  check-from-deg(from-deg(Deg(-169.06666666622118))){ DMS(-169, 3, 59.99999839625161) }
 }
 
 public fun main() {
   test-eq()
   test-show()
+  test-from-deg()
 }
