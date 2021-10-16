@@ -6,8 +6,16 @@ import std/num/double
 struct deg { deg: double }
 type dms { con DMS{ deg: int; min: int; sec: double } }
 
+fun (==)( x: deg, y: deg): bool {
+  x.deg == y.deg
+}
+
 fun (==)( x: dms, y: dms): bool {
   x.deg == y.deg && x.min == y.min && x.sec == y.sec
+}
+
+fun show ( d: deg, precision: int = -2 ): string {
+  d.deg.show-fixed(precision) ++ "''"
 }
 
 fun show ( dms: dms, precision: int = -2 ): string {
@@ -40,6 +48,23 @@ fun from-deg( Deg(d) ): dms {
   DMS (s * dd.int, mm, mFrac * 60.0)
 }
 
+fun sign_ (d, m, s): int {
+  if [d, m, s].map(signum).any(fn(x) {x == -1}) then -1 else 1
+}
+
+fun sign-dms ( DMS(di, mi, s) ) {
+  val d = di.double
+  val m = mi.double
+  sign_ (d, m, s)
+}
+
+fun to-deg( dms: dms ): deg {
+  val DMS(di, mi, s) = dms
+  val d = di.double
+  val m = mi.double
+  Deg (dms.sign-dms.double * (d.abs + m.abs / 60.0 + s.abs / 3600.0))
+}
+
 fun check-eq( res: dms, tst: () -> dms, name = "eq " ++ res.show ) : <io> () {
   val got = tst()
   println(name ++ ": " ++
@@ -64,6 +89,14 @@ fun check-from-deg( res: dms, tst: () -> dms, name = "from-deg " ++ res.show(14)
     else "failed!:\n expect: " ++ res.show(14) ++ "\n gotten: " ++ got.show(14)))
 }
 
+fun check-to-deg( res: deg, tst: () -> deg, name = "to-deg " ++ res.show(14) ): <io> () {
+  val got = tst()
+  println(name ++ ": " ++
+    (if (got == res)
+    then "ok: " ++ res.show(14)
+    else "failed!:\n expect: " ++ res.show(14) ++ "\n gotten: " ++ got.show(14)))
+}
+
 fun test-eq() {
   check-eq(DMS(90, 12, 0.9999)){ DMS(90, 12, 0.9999) }
 }
@@ -81,8 +114,14 @@ fun test-from-deg() {
   check-from-deg(from-deg(Deg(-169.06666666622118))){ DMS(-169, 3, 59.99999839625161) }
 }
 
+fun test-to-deg() {
+  check-to-deg(to-deg(DMS(0, 0, 0.0))){ Deg(0.0) }
+  check-to-deg(to-deg(DMS(289, 30, 0.0))){ Deg(289.5) }
+}
+
 public fun main() {
   test-eq()
   test-show()
   test-from-deg()
+  test-to-deg()
 }
