@@ -22,13 +22,22 @@ fun signum( i: double ): int {
   }
 }
 
+private fun div'(n: double, d: int): int {
+  (n / d.double).floor.int
+}
+
+private fun divmod'( n: double, d: int): (int, double) {
+  val f = div'(n, d)
+  (f, n - (f * d).double)
+}
+
 fun from-deg( Deg(d) ): dms {
   val s = d.signum
   val dAbs = d.abs
   val dd = dAbs.floor
   val dFrac = dAbs - dd
-  val (mm, mFrac) = divmod ( (dFrac * 60.0).truncate.int, 1)
-  DMS (s * dd.int, mm, mFrac.double * 60.0)
+  val (mm, mFrac) = divmod' ( dFrac * 60.0, 1 )
+  DMS (s * dd.int, mm, mFrac * 60.0)
 }
 
 fun check-eq( res: dms, tst: () -> dms, name = "eq " ++ res.show ) : <io> () {
@@ -47,11 +56,11 @@ fun check-show( res: string, tst: () -> string, name = "show " ++ res ) : <io> (
     else "failed!:\n expect: " ++ res ++ "\n gotten: " ++ got))
 }
 
-fun check-from-deg( res: dms, tst: () -> dms, name = "from-deg " ++ res.show ): <io> () {
+fun check-from-deg( res: dms, tst: () -> dms, name = "from-deg " ++ res.show(14) ): <io> () {
   val got = tst()
   println(name ++ ": " ++
     (if (got == res)
-    then "ok: " ++ res.show
+    then "ok: " ++ res.show(14)
     else "failed!:\n expect: " ++ res.show(14) ++ "\n gotten: " ++ got.show(14)))
 }
 
