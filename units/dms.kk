@@ -72,15 +72,14 @@ fun to-deg( dms: dms ): deg {
 
 fun normalize( dms: dms ): dms { dms.to-deg.deg.mod'(360).Deg.from-deg }
 
-fun check-eq( res: dms, tst: () -> dms, name = "eq " ++ res.show ) : <io> () {
-  val got = tst()
+fun check-eq( res: dms, got: dms, name = "eq " ++ res.show ) : console () {
   println(name ++ ": " ++
     (if (got == res)
     then "ok: " ++ res.show
     else "failed!:\n expect: " ++ res.show ++ "\n gotten: " ++ got.show))
 }
 
-fun check-normalize( res: dms, tst: dms, name = "normalize " ++ tst.show ) : <io> () {
+fun check-normalize( res: dms, tst: dms, name = "normalize " ++ tst.show ) : console () {
   val got = tst.normalize
   println(name ++ ": " ++
     (if (got == res)
@@ -88,24 +87,21 @@ fun check-normalize( res: dms, tst: dms, name = "normalize " ++ tst.show ) : <io
     else "failed!:\n expect: " ++ res.show ++ "\n gotten: " ++ got.show))
 }
 
-fun check-show( res: string, tst: () -> string, name = "show " ++ res ) : <io> () {
-  val got = tst()
+fun check-show( res: string, got: string, name = "show " ++ res ) : console () {
   println(name ++ ": " ++
     (if (got == res)
     then "ok: " ++ res
     else "failed!:\n expect: " ++ res ++ "\n gotten: " ++ got))
 }
 
-fun check-from-deg( res: dms, tst: () -> dms, name = "from-deg " ++ res.show(14) ): <io> () {
-  val got = tst()
+fun check-from-deg( res: dms, got: dms, name = "from-deg " ++ res.show(14) ): console () {
   println(name ++ ": " ++
     (if (got == res)
     then "ok: " ++ res.show(14)
     else "failed!:\n expect: " ++ res.show(14) ++ "\n gotten: " ++ got.show(14)))
 }
 
-fun check-to-deg( res: deg, tst: () -> deg, name = "to-deg " ++ res.show(14) ): <io> () {
-  val got = tst()
+fun check-to-deg( res: deg, got: deg, name = "to-deg " ++ res.show(14) ): console () {
   println(name ++ ": " ++
     (if (got == res)
     then "ok: " ++ res.show(14)
@@ -113,7 +109,7 @@ fun check-to-deg( res: deg, tst: () -> deg, name = "to-deg " ++ res.show(14) ): 
 }
 
 fun test-eq() {
-  check-eq(DMS(90, 12, 0.9999)){ DMS(90, 12, 0.9999) }
+  check-eq(DMS(90, 12, 0.9999), DMS(90, 12, 0.9999) )
 }
 
 fun test-normalize() {
@@ -134,21 +130,21 @@ fun test-normalize() {
 }
 
 fun test-show() {
-  check-show("90°12'0.9999''"){ DMS(90, 12, 0.9999).show(4) }
-  check-show("169°3'59.99999839625161''"){ DMS(169, 3, 59.99999839625161).show(14) }
+  check-show("90°12'0.9999''", DMS(90, 12, 0.9999).show(4) )
+  check-show("169°3'59.99999839625161''", DMS(169, 3, 59.99999839625161).show(14) )
 }
 
 fun test-from-deg() {
-  check-from-deg(from-deg(Deg(0.0))){ DMS(0, 0, 0.0) }
-  check-from-deg(from-deg(Deg(1.0))){ DMS(1, 0, 0.0) }
-  check-from-deg(from-deg(Deg(-1.0))){ DMS(-1, 0, 0.0) }
-  check-from-deg(from-deg(Deg(169.06666666622118))){ DMS(169, 3, 59.99999839625161) }
-  check-from-deg(from-deg(Deg(-169.06666666622118))){ DMS(-169, 3, 59.99999839625161) }
+  check-from-deg(from-deg(Deg(0.0)), DMS(0, 0, 0.0) )
+  check-from-deg(from-deg(Deg(1.0)), DMS(1, 0, 0.0) )
+  check-from-deg(from-deg(Deg(-1.0)), DMS(-1, 0, 0.0) )
+  check-from-deg(from-deg(Deg(169.06666666622118)), DMS(169, 3, 59.99999839625161) )
+  check-from-deg(from-deg(Deg(-169.06666666622118)), DMS(-169, 3, 59.99999839625161) )
 }
 
 fun test-to-deg() {
-  check-to-deg(to-deg(DMS(0, 0, 0.0))){ Deg(0.0) }
-  check-to-deg(to-deg(DMS(289, 30, 0.0))){ Deg(289.5) }
+  check-to-deg(to-deg(DMS(0, 0, 0.0)), Deg(0.0) )
+  check-to-deg(to-deg(DMS(289, 30, 0.0)), Deg(289.5) )
 }
 
 public fun main() {
