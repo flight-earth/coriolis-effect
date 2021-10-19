@@ -6,6 +6,7 @@ public alias rad = double
 public alias deg = double
 alias min = double
 alias sec = double
+public alias meter = double
 
 fun min-to-sec( m: min ): sec -> m * 60.0
 fun deg-to-sec( d: deg ): sec -> d * 3600.0
