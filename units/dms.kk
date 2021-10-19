@@ -2,8 +2,10 @@ public module units/dms
 
 import std/num/int64
 import std/num/double
+import units/convert
 
-struct deg { deg: double }
+struct deg { deg: units/convert/deg }
+struct rad { rad: units/convert/rad }
 type dms { con DMS{ deg: int; min: int; sec: double } }
 
 fun (==)( x: deg, y: deg): bool -> x.deg == y.deg
@@ -47,6 +49,8 @@ private fun divmod'( n: double, d: int ): (int, double) {
   val f = div'(n, d)
   (f, n - (f * d).double)
 }
+
+fun from-rad( Rad(r) ): deg -> r.rad-to-deg.Deg
 
 fun from-deg( Deg(d) ): dms {
   val s = d.signum

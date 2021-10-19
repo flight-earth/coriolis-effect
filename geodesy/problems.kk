@@ -1,4 +1,4 @@
-public module geodesy 
+public module geodesy/problems 
 
 value struct lat-lng{ lat: double; lng: double }
 value struct az{ az: double }
