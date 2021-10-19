@@ -6,17 +6,10 @@ import std/num/double
 struct deg { deg: double }
 type dms { con DMS{ deg: int; min: int; sec: double } }
 
-fun (==)( x: deg, y: deg): bool {
-  x.deg == y.deg
-}
+fun (==)( x: deg, y: deg): bool -> x.deg == y.deg
+fun (==)( x: dms, y: dms): bool -> x.deg == y.deg && x.min == y.min && x.sec == y.sec
 
-fun (==)( x: dms, y: dms): bool {
-  x.deg == y.deg && x.min == y.min && x.sec == y.sec
-}
-
-fun show ( d: deg ): string {
-  if d.deg == 0.0 then "0°" else d.deg.show ++ "°"
-}
+fun show ( d: deg ): string -> if d.deg == 0.0 then "0°" else d.deg.show ++ "°"
 
 fun sec-to-show ( sec: double ): string {
   val isec = sec.floor
@@ -43,9 +36,7 @@ fun signum( i: double ): int {
   }
 }
 
-private fun div'(n: double, d: int): int {
-  (n / d.double).floor.int
-}
+private fun div'(n: double, d: int): int -> (n / d.double).floor.int
 
 private fun mod'(n: double, d: int ): double {
   val f = div'(n, d)
@@ -66,9 +57,7 @@ fun from-deg( Deg(d) ): dms {
   DMS (s * dd.int, mm, mFrac * 60.0)
 }
 
-fun sign_ (d, m, s): int {
-  if [d, m, s].map(signum).any(fn(x) {x == -1}) then -1 else 1
-}
+fun sign_ (d, m, s): int -> if [d, m, s].map(signum).any(fn(x) {x == -1}) then -1 else 1
 
 fun sign-dms ( DMS(di, mi, s) ) {
   val d = di.double
@@ -83,7 +72,7 @@ fun to-deg( dms: dms ): deg {
   Deg (dms.sign-dms.double * (d.abs + m.abs / 60.0 + s.abs / 3600.0))
 }
 
-fun normalize( dms: dms ): dms { dms.to-deg.deg.mod'(360).Deg.from-deg }
+fun normalize( dms: dms ): dms -> dms.to-deg.deg.mod'(360).Deg.from-deg
 
 fun check-eq( res: dms, got: dms, name = "eq " ++ res.show ) : console () {
   println(name ++ ": " ++
