@@ -14,12 +14,25 @@ fun (==)( x: dms, y: dms): bool {
   x.deg == y.deg && x.min == y.min && x.sec == y.sec
 }
 
-fun show ( d: deg, precision: int = -2 ): string {
-  d.deg.show-fixed(precision) ++ "''"
+fun show ( d: deg ): string {
+  if d.deg == 0.0 then "0°" else d.deg.show ++ "°"
 }
 
-fun show ( dms: dms, precision: int = -2 ): string {
-  dms.deg.show ++ "°" ++ dms.min.show ++ "'" ++ dms.sec.show-fixed(precision) ++ "''"
+fun sec-to-show ( sec: double ): string {
+  val isec = sec.floor
+  if isec == sec then isec.abs.show else sec.abs.show
+}
+
+fun sign-symbol ( dms: dms ): string -> if dms.sign-dms < 0 then "-" else ""
+
+fun show ( dms: dms ): string {
+  match (dms) {
+    DMS(deg, 0, sec) | sec == 0.0 -> deg.show ++ "°"
+    DMS(0, 0, sec) -> sec.sec-to-show ++ "''"
+    DMS(deg, min, sec) | sec == 0.0 -> dms.sign-symbol ++ deg.abs.show ++ "°" ++ min.abs.show ++ "'"
+    DMS(0, min, sec) -> dms.sign-symbol ++ min.abs.show ++ "'" ++ sec.sec-to-show ++ "''"
+    DMS(deg, min, sec) -> dms.sign-symbol ++ deg.abs.show ++ "°" ++ min.abs.show ++ "'" ++ sec.sec-to-show ++ "''"
+  } 
 }
 
 fun signum( i: double ): int {
@@ -94,18 +107,18 @@ fun check-show( res: string, got: string, name = "show " ++ res ) : console () {
     else "failed!:\n expect: " ++ res ++ "\n gotten: " ++ got))
 }
 
-fun check-from-deg( res: dms, got: dms, name = "from-deg " ++ res.show(14) ): console () {
+fun check-from-deg( res: dms, got: dms, name = "from-deg " ++ res.show ): console () {
   println(name ++ ": " ++
     (if (got == res)
-    then "ok: " ++ res.show(14)
-    else "failed!:\n expect: " ++ res.show(14) ++ "\n gotten: " ++ got.show(14)))
+    then "ok: " ++ res.show
+    else "failed!:\n expect: " ++ res.show ++ "\n gotten: " ++ got.show))
 }
 
-fun check-to-deg( res: deg, got: deg, name = "to-deg " ++ res.show(14) ): console () {
+fun check-to-deg( res: deg, got: deg, name = "to-deg " ++ res.show ): console () {
   println(name ++ ": " ++
     (if (got == res)
-    then "ok: " ++ res.show(14)
-    else "failed!:\n expect: " ++ res.show(14) ++ "\n gotten: " ++ got.show(14)))
+    then "ok: " ++ res.show
+    else "failed!:\n expect: " ++ res.show ++ "\n gotten: " ++ got.show))
 }
 
 fun test-eq() {
@@ -130,8 +143,8 @@ fun test-normalize() {
 }
 
 fun test-show() {
-  check-show("90°12'0.9999''", DMS(90, 12, 0.9999).show(4) )
-  check-show("169°3'59.99999839625161''", DMS(169, 3, 59.99999839625161).show(14) )
+  check-show("90°12'0.9999''", DMS(90, 12, 0.9999).show )
+  check-show("169°3'59.99999839625161''", DMS(169, 3, 59.99999839625161).show )
 }
 
 fun test-from-deg() {
