@@ -75,3 +75,10 @@ fun inverse( InverseProblem(x, y) ) {
   val az2 = azimuthRev(x', y').maybeMap(Az)
   InverseSolution( s = distance(x, y).S-dist, az1 = az1, az2 = az2 )
 }
+
+val london = Lat-lng(51.5007.deg-to-rad,  -0.1246.deg-to-rad)
+val newyork = Lat-lng(40.6892.deg-to-rad, -74.0445.deg-to-rad)
+
+// > dist-london-newyork
+// 5574840.4568485543
+val dist-london-newyork = distance(london, newyork)
