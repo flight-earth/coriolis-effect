@@ -82,3 +82,4 @@ val newyork = LatLng(40.6892.deg-to-rad, -74.0445.deg-to-rad)
 // > dist-london-newyork
 // 5574840.4568485543
 val dist-london-newyork = distance(london, newyork)
+val inverse-london-newyork = inverse(InverseProblem(london, newyork))
