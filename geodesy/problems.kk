@@ -1,6 +1,7 @@
-public module geodesy/problems 
+public module geodesy/problems
 
-value struct lat-lng{ lat: double; lng: double }
+import latlng
+
 value struct az{ az: double }
 value struct s-dist{ s-dist: double }
 

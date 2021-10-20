@@ -10,7 +10,7 @@ import latlng
 
 fun haversine ( x : units/convert/rad ): units/convert/rad { val y = sin (x / 2.0); y * y }
 
-fun aOfHaversine( Lat-lng(xLatF, xLngF), Lat-lng(yLatF, yLngF) ): units/convert/rad {
+fun aOfHaversine( LatLng(xLatF, xLngF), LatLng(yLatF, yLngF) ): units/convert/rad {
     val (dLatF, dLngF) = (yLatF - xLatF, yLngF - xLngF)
     val hLatF = haversine(dLatF)
     val hLngF = haversine(dLngF)
@@ -61,7 +61,7 @@ fun direct( prob : directProblem ) : directSolution {
       Rad(az).rotate(Rad(pi)).from-rad.from-deg.normalize.to-deg.deg.deg-to-rad.Az
   }
 
-  DirectSolution(y = Lat-lng(lat2, lng2), az2 = az2.maybe)
+  DirectSolution(y = LatLng(lat2, lng2), az2 = az2.maybe)
 }
 
 fun maybeMap( x: maybe<a>, f: a -> e b ): e maybe<b> {
@@ -76,8 +76,8 @@ fun inverse( InverseProblem(x, y) ) {
   InverseSolution( s = distance(x, y).S-dist, az1 = az1, az2 = az2 )
 }
 
-val london = Lat-lng(51.5007.deg-to-rad,  -0.1246.deg-to-rad)
-val newyork = Lat-lng(40.6892.deg-to-rad, -74.0445.deg-to-rad)
+val london = LatLng(51.5007.deg-to-rad,  -0.1246.deg-to-rad)
+val newyork = LatLng(40.6892.deg-to-rad, -74.0445.deg-to-rad)
 
 // > dist-london-newyork
 // 5574840.4568485543
