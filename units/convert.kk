@@ -18,3 +18,15 @@ fun sec-to-deg( s: sec ): deg -> s / 3600.0
 
 public fun deg-to-rad( x: deg ): rad -> x * pi / 180.0
 public fun rad-to-deg( x: rad) : deg -> x / pi * 180.0
+
+public val normalize-rad: rad -> rad = rad-to-deg.o(normalize-deg).o(deg-to-rad)
+
+public fun normalize-deg( degPlusMinus: deg ): deg {
+  val deg = degPlusMinus.abs
+  val n = truncate(deg / 360.0)
+  val d = deg - n * 360.0
+
+  if d == 0.0 then d
+  elif degPlusMinus > 0.0 then d
+  else 360.0 - d
+}
