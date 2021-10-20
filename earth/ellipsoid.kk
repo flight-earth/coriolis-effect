@@ -2,8 +2,6 @@ public module earth/ellipsoid
 
 import units/convert
 
-struct radius { radius: units/convert/meter }
-
 struct ellipsoid {
   equatorialR: radius
   recipF: double
