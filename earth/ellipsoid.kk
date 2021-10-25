@@ -1,6 +1,7 @@
 public module earth/ellipsoid
 
 import units/convert
+import units/radius
 
 struct ellipsoid {
   equatorialR: radius
