@@ -1,5 +1,5 @@
 public module units/radius
 
-import units/convert
+import units/defs
 
-struct radius { radius: units/convert/meter }
+struct radius { radius: units/defs/meter }
