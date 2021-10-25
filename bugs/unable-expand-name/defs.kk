@@ -1,4 +1,4 @@
-module units/defs
+module defs
 
 import std/num/double
 
